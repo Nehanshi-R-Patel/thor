@@ -12,23 +12,23 @@ import org.springframework.stereotype.Controller;
 import com.xworkz.cm.entity.RegisterEntity;
 
 @Controller
-public class LoginDAOImpl implements LoginDAO {
+public class ForgotPswDAOImpl implements ForgotPswDAO {
 
 	@Autowired
 	private SessionFactory sessionFactory;
 
-	public LoginDAOImpl() {
+	public ForgotPswDAOImpl() {
 		System.out.println("Created \t" + this.getClass().getSimpleName());
 	}
 
-	public RegisterEntity fetchEmail(String mail) {
-		System.out.println("Invoking Email...");
+	public RegisterEntity fetchEmailId(String mailId) {
+		System.out.println("Invoking EmailId...");
 		Session session = null;
 		RegisterEntity entity = null;
 		try {
 			session = sessionFactory.openSession();
 
-			String hqlQry = "from RegisterEntity  where email='" + mail + "'";
+			String hqlQry = "from RegisterEntity  where email='" + mailId + "'";
 
 			System.out.println("Creating Query");
 			Query<RegisterEntity> query = session.createQuery(hqlQry, RegisterEntity.class);
@@ -37,7 +37,7 @@ public class LoginDAOImpl implements LoginDAO {
 			entity = (RegisterEntity) query.uniqueResult();
 			System.out.println("Entity: " + entity);
 			if (entity != null) {
-				System.out.println("Data Found...");
+				System.out.println("Based on EmailId Data Found...");
 				return entity;
 			}
 		} catch (HibernateException e) {
@@ -50,15 +50,16 @@ public class LoginDAOImpl implements LoginDAO {
 		return null;
 	}
 
-	public int updateCount(int count, int id) {
-		System.out.println("Invoking updateCount...");
+	public int updatePassword(String password, int count, int id) {
+		System.out.println("Invoking updatePassword...");
 		Session session = null;
 		try {
 			session = sessionFactory.openSession();
 			System.out.println("Transaction Begins");
 
 			session.beginTransaction();
-			String hqlQry = " update RegisterEntity re set re.count = '" + count + "' where re.id = '" + id + "'";
+			String hqlQry = " update RegisterEntity re set re.password = '" + password + "' , re.count='" + count
+					+ "' where re.id = '" + id + "'";
 
 			System.out.println("Creating Query");
 			Query query = session.createQuery(hqlQry);

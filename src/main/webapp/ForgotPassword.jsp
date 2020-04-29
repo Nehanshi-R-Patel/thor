@@ -69,7 +69,7 @@
 <title>Insert title here</title>
 </head>
 <body style="padding: 0; margin: 0; height: 2px;">
-	<nav class="navbar navbar-expand-sm" style=" background-color:rgba(255, 99, 71,0.5);"> <!-- Brand -->
+	<nav class="navbar navbar-expand-sm" style=" background-color:rgba(255, 99, 71,0.5);">
 	<div class="container-fluid">
 	 <div class="navbar-header">
 	<a class="navbar-brand" href="#"><strong style="color:rgb(106, 150,150);font-size:40px;">X-WORKZ CM</strong></a>
@@ -80,23 +80,15 @@
      </ul>
 	</div>
 </nav>
-<form action="login.do" method="post">
+<form action="forgotPsw.do" method="post">
 <div class="form-box">
-	<h1>Login Here</h1>	
+	<h1>Forgot Password</h1>	
 	<div class="input-box">
 		<i class="fa fa-envelope-o"></i>
 		<input type="text" name="email" placeholder="Email Id">
 	</div>
-	<div class="input-box">
-		<i class="fa fa-key"></i>
-		<input type="password" name="password" placeholder="Password">
-	</div>
-	<button type="submit" class="login-btn">LOGIN</button>
-	<p class="text-center" style="color: gray; font-size: 16px;">
-	<a href="ForgotPassword.jsp">FORGOT PASSWORD</a>
-	</p>
-	<h3 style="text-align:center">${LoginMsg}</h3>
-	<h3 style="text-align:center">${BlockLogin}</h3>
+	<button type="submit" class="login-btn">Reset</button>
+	<h3 style="text-align:center">${NewPassword}</h3>
 </div>
 </form>
 <div class="footer-copyright py-3 text-center">

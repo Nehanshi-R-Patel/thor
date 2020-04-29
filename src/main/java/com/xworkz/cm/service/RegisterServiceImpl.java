@@ -4,6 +4,7 @@ import java.util.Random;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
@@ -43,12 +44,19 @@ public class RegisterServiceImpl implements RegisterService {
 			for (int i = 0; i < length; i++) {
 				psw += text[i];
 			}
+			BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
+			String hashedPassword=passwordEncoder.encode(psw);
+			
+			System.out.println("Encoded Password: "+hashedPassword);
 			System.out.println("Password Generated");
-			entity.setPassword(psw);
+			
+			entity.setPassword(hashedPassword);
 			entity.setCount(0);
-			System.out.println("Password :" + entity.getPassword());
+			
+			System.out.println("Password :" + psw);
+			
 			model.addAttribute("UserID", entity.getUserId());
-			model.addAttribute("Password", entity.getPassword());
+			model.addAttribute("Password",psw);
 			this.registerDAO.saveRegisterData(entity);
 			return "Register";
 		} else if (registerDAO.getUserId(registerDTO.getUserId())) {

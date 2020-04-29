@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.xworkz.cm.dao.LoginDAO;
@@ -39,14 +40,20 @@ public class LoginServiceImpl implements LogInService {
 			int idFmDB=registerEntity.getId();
 			System.out.println("ID from DB :"+idFmDB);
 			
+			BCryptPasswordEncoder encoder=new BCryptPasswordEncoder();
+			boolean isPasswordMatch=encoder.matches(loginDTO.getPassword(),pswFmDB);
+			System.out.println("Is Password match: "+isPasswordMatch);
+			
 			countPasswordAttempt = registerEntity.getCount();
-			System.out.println(countPasswordAttempt);
+			System.out.println("Count Password Attempt :"+countPasswordAttempt);
+			
 			if(countPasswordAttempt>=0 && countPasswordAttempt<3) {
-				if(loginDTO.getPassword().equals(pswFmDB)) {
+				if(isPasswordMatch==true) {
 					System.out.println("Password is match...");
 					flag=true;
 				} else {
 					countPasswordAttempt++;
+					System.out.println("Count Password: "+countPasswordAttempt);
 					System.out.println("password is faild");
 					this.loginDAO.updateCount(countPasswordAttempt, idFmDB);
 				}
