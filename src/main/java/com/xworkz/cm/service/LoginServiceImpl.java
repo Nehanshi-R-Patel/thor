@@ -2,6 +2,7 @@ package com.xworkz.cm.service;
 
 import java.util.Objects;
 
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,16 +16,18 @@ import com.xworkz.cm.entity.RegisterEntity;
 public class LoginServiceImpl implements LogInService {
 	
 	public static int countPasswordAttempt;
+	
+	private static final Logger logger=Logger.getLogger(LoginServiceImpl.class);
 
 	@Autowired
 	private LoginDAO loginDAO;
 
 	public LoginServiceImpl() {
-		System.out.println("Created \t" + this.getClass().getSimpleName());
+		logger.info("Created \t" + this.getClass().getSimpleName());
 	}
 
 	public String validateLogin(LoginDTO loginDTO) {
-		System.out.println("Invoking Validate Login...");
+		logger.info("Invoking Validate Login...");
 		boolean flag=false;
 		try {
 			
@@ -35,26 +38,26 @@ public class LoginServiceImpl implements LogInService {
 			}
 			
 			String pswFmDB=registerEntity.getPassword();
-			System.out.println("Password From DB :"+pswFmDB);
+			logger.info("Password From DB :"+pswFmDB);
 			
 			int idFmDB=registerEntity.getId();
-			System.out.println("ID from DB :"+idFmDB);
+			logger.info("ID from DB :"+idFmDB);
 			
 			BCryptPasswordEncoder encoder=new BCryptPasswordEncoder();
 			boolean isPasswordMatch=encoder.matches(loginDTO.getPassword(),pswFmDB);
-			System.out.println("Is Password match: "+isPasswordMatch);
+			logger.info("Is Password match: "+isPasswordMatch);
 			
 			countPasswordAttempt = registerEntity.getCount();
-			System.out.println("Count Password Attempt :"+countPasswordAttempt);
+			logger.info("Count Password Attempt :"+countPasswordAttempt);
 			
 			if(countPasswordAttempt>=0 && countPasswordAttempt<3) {
 				if(isPasswordMatch==true) {
-					System.out.println("Password is match...");
+					logger.info("Password is match...");
 					flag=true;
 				} else {
 					countPasswordAttempt++;
-					System.out.println("Count Password: "+countPasswordAttempt);
-					System.out.println("password is faild");
+					logger.info("Count Password: "+countPasswordAttempt);
+					logger.info("password is faild");
 					this.loginDAO.updateCount(countPasswordAttempt, idFmDB);
 				}
 			} else { 
@@ -66,7 +69,7 @@ public class LoginServiceImpl implements LogInService {
 				return "loginSuccess";
 			}
 		} catch (HibernateException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(),e);
 		}
 		return "loginFailed";
 	}

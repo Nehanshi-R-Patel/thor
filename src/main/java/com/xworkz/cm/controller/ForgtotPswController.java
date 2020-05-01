@@ -1,5 +1,6 @@
 package com.xworkz.cm.controller;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,35 +13,39 @@ import com.xworkz.cm.service.ForgotPswService;
 @RequestMapping("/")
 public class ForgtotPswController {
 	
+	private static final Logger logger=Logger.getLogger(ForgtotPswController.class);
+	
 	@Autowired
 	ForgotPswService forgotPswService;
 	
 	public ForgtotPswController() {
-		System.out.println("Created \t"+this.getClass().getSimpleName());
+		logger.info("Created \t"+this.getClass().getSimpleName());
 	}
 	
 	@RequestMapping("forgotPsw.do")
 	public String onForgot(ForgotPswDTO forgotPswDTO,Model model) {
-		System.out.println("Invoking on Forgot...");
+		logger.info("Invoking on Forgot...");
 		String page=" ";
 		
 		String mailId=forgotPswDTO.getEmail();
-		System.out.println("MailId: "+mailId);
+		logger.info("MailId: "+mailId);
 		
 		try {
 			String dataFmDB=this.forgotPswService.validateEmail(forgotPswDTO,model);
-			System.out.println("Data From DB:"+dataFmDB);
+			logger.info("Data From DB:"+dataFmDB);
 			
 			if(dataFmDB.equals("emailMatching")) {
+				logger.info("Email is match");
 				model.addAttribute("EmailMsg", "Match Email....");
 				page="ForgotPassword";
 			}else {
-				model.addAttribute("EmailMsg", "Email is not exist....");
+				logger.info("Email is not Exist...!");
+				model.addAttribute("EmailMsg", "Email is not Exist...!");
 				page="ForgotPassword";
 			}
 		} catch (Exception e) {
-			System.out.println("Exception Found");
-			e.printStackTrace();
+			logger.info("Exception Found");
+			logger.error(e.getMessage(),e);
 		}
 		return page;
 	}

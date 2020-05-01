@@ -3,6 +3,7 @@ package com.xworkz.cm.service;
 import java.util.Objects;
 import java.util.Random;
 
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,19 +16,21 @@ import com.xworkz.cm.entity.RegisterEntity;
 
 @Service
 public class ForgotPswServiceImpl implements ForgotPswService {
+	
+	private static final Logger logger=Logger.getLogger(ForgotPswServiceImpl.class);
 
 	@Autowired
 	ForgotPswDAO forgotPswDAO;
 
 	public ForgotPswServiceImpl() {
-		System.out.println("Created \t" + this.getClass().getSimpleName());
+		logger.info("Created \t" + this.getClass().getSimpleName());
 	}
 
 	public String validateEmail(ForgotPswDTO forgotPswDTO,Model model) {
-		System.out.println("Invoking Validate Email...");
+		logger.info("Invoking Validate Email...");
 		try {
 			RegisterEntity registerEntity = this.forgotPswDAO.fetchEmailId(forgotPswDTO.getEmail());
-			System.out.println("Register Entity:" + registerEntity);
+			logger.info("Register Entity:" + registerEntity);
 
 			if (Objects.isNull(registerEntity)) {
 				return "emailNotMatching";
@@ -51,19 +54,19 @@ public class ForgotPswServiceImpl implements ForgotPswService {
 				BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
 				String hashedPassword=passwordEncoder.encode(psw);
 				
-				System.out.println("Password Generated :" + psw);
-				System.out.println("Encoded Password : "+hashedPassword);
+				logger.info("Password Generated :" + psw);
+				logger.info("Encoded Password : "+hashedPassword);
 				
 				registerEntity.setPassword(hashedPassword);
 				registerEntity.setCount(count);
-				System.out.println("Count is:"+count);
+				logger.info("Count is:"+count);
 	
 				this.forgotPswDAO.updatePassword(hashedPassword, count, idFmDB);
 				model.addAttribute("NewPassword",psw);
 				return "emailMatching";
 			}
 		} catch (HibernateException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(),e);
 		}
 		return "emailNotMatching";
 	}

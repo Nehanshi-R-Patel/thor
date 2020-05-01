@@ -82,8 +82,8 @@
 			<label class="custom-control-label" for="customRadio">Agree </label>
 		</div>
 		<div class="custom-control custom-radio custom-control-inline">
-			<input type="radio" class="custom-control-input" id="customRadio2" name="agree" value="Dis-Agree"> 
-			<label class="custom-control-label" for="customRadio2">Dis-Agree</label>
+			<input type="radio" class="custom-control-input" id="customRadio2" name="agree" value="DisAgree"> 
+			<label class="custom-control-label" for="customRadio2">DisAgree</label>
 		</div>
 		</div><br>
 							

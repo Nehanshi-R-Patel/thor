@@ -1,5 +1,6 @@
 package com.xworkz.cm.controller;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,46 +13,50 @@ import com.xworkz.cm.service.LogInService;
 @RequestMapping("/")
 public class LoginController {
 	
+	private static final Logger logger=Logger.getLogger(LoginController.class);
+	
 	@Autowired
 	private LogInService logInService;
 	
 	public LoginController() {
-		System.out.println("Created \t" + this.getClass().getSimpleName());
+		logger.info("Created \t" + this.getClass().getSimpleName());
 	}
 	
 	@RequestMapping("login.do")
 	public String onLogin(LoginDTO loginDTO,Model model) {
 		String page = "";
-		System.out.println("invoking on login...");
+		logger.info("invoking on login...");
 		
 		String mailId=loginDTO.getEmail();
- 		System.out.println("Login MailId :"+mailId);
+		logger.info("Login MailId :"+mailId);
 		
-		System.out.println("----------------");
+		logger.info("----------------");
 		
 		String pwd=loginDTO.getPassword();
-		System.out.println("Login Password :"+pwd);
+		logger.info("Login Password :"+pwd);
 		
 		try {
 			String  datafmDB=this.logInService.validateLogin(loginDTO);
-			System.out.println("Data From DB:"+datafmDB);
+			logger.info("Data From DB:"+datafmDB);
 			
 			if(datafmDB.equals("loginSuccess")) {
+				logger.info("SignIn Successful");
 				model.addAttribute("LoginMsg", "SignIn Successful");
 				page= "Home";
 			}else if (datafmDB.equals("loginFailed")){
+				logger.info("Email or Password is wrong");
 				System.out.println("Email or password is wrong");
 				model.addAttribute("LoginMsg", "Email or password is wrong");
 				page ="Login";
 			}
 			else {
-				System.out.println("Your Account has been block due to wrong password");
+				logger.info("Your Account has been block due to wrong password");
 				model.addAttribute("BlockLogin", "Your Account has been block due to wrong password");
 				page ="LoginBlock";
 			}
 		}catch (Exception e) {
-			System.out.println("Exception Found");
-			e.printStackTrace();
+			logger.info("Exception Found");
+			logger.error(e.getMessage(),e);
 		}
 		return page;
 	}

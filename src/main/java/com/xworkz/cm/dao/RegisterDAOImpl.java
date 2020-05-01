@@ -3,6 +3,7 @@ package com.xworkz.cm.dao;
 import java.io.Serializable;
 import java.util.Objects;
 
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -14,35 +15,37 @@ import com.xworkz.cm.entity.RegisterEntity;
 
 @Controller
 public class RegisterDAOImpl implements RegisterDAO {
+	
+	private static final Logger logger=Logger.getLogger(RegisterDAOImpl.class);
 
 	@Autowired
 	private SessionFactory sessionFactory;
 
 	public RegisterDAOImpl() {
-		System.out.println("Created \t" + this.getClass().getSimpleName());
+		logger.info("Created \t" + this.getClass().getSimpleName());
 	}
 
 	public void saveRegisterData(RegisterEntity entity) {
-		System.out.println("invoking save register....");
+		logger.info("invoking save register....");
 		Session session = null;
 		try {
 			session = sessionFactory.openSession();
-			System.out.println("Transaction Begins");
+			logger.info("Transaction Begins");
 			
 			session.beginTransaction();
 			
 			Serializable id=session.save(entity);
-			System.out.println("Query saved: "+id);
+			logger.info("Query saved: "+id);
 			
 			session.getTransaction().commit();
 			if (Objects.nonNull(entity)) {
-				System.out.println("Data Stored Successfully...");
+				logger.info("Data Stored Successfully...");
 			} else {
-				System.out.println("Data not Stored Successfully...");
+				logger.info("Data not Stored Successfully...");
 			}
 		} catch (HibernateException e) {
 			session.getTransaction().rollback();
-			e.printStackTrace();
+			logger.error(e.getMessage(),e);
 		} finally {
 			if (Objects.nonNull(session))
 				session.close();
@@ -50,26 +53,26 @@ public class RegisterDAOImpl implements RegisterDAO {
 	}
 
 	public boolean getUserId(String userId) {
-		System.out.println("invoking getUserid");
+		logger.info("invoking getUserid");
 		Session session = null;
 		try {
 			session = sessionFactory.openSession();
-			System.out.println("Creating Query");
+			logger.info("Creating Query");
 			
 			String hql = " from RegisterEntity re where re.userId=?";
 			Query<RegisterEntity> query = session.createQuery(hql, RegisterEntity.class);
 			
 			query.setParameter(0, userId);
-			System.out.println("Getting unique result");
+			logger.info("Getting unique result");
 			RegisterEntity result = query.uniqueResult();
 			
-			System.out.println("UserId Result :" + result);
+			logger.info("UserId Result :" + result);
 			if (result == null)
 				return true;
 			else
 				return false;
 		} catch (HibernateException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(),e);
 		} finally {
 			if (Objects.nonNull(session))
 				session.close();
@@ -78,27 +81,27 @@ public class RegisterDAOImpl implements RegisterDAO {
 	}
 
 	public boolean getEmail(String emailId) {
-		System.out.println("invoking getemailId");
+		logger.info("invoking getemailId");
 		Session session = null;
 		try {
 			session = sessionFactory.openSession();
-			System.out.println("Creating Query");
+			logger.info("Creating Query");
 			
 			String hql = " from RegisterEntity re where re.email=?";
 			Query<RegisterEntity> query = session.createQuery(hql, RegisterEntity.class);
 			
 			query.setParameter(0, emailId);
 			
-			System.out.println("Getting unique result");
+			logger.info("Getting unique result");
 			RegisterEntity result = query.uniqueResult();
 			
-			System.out.println("Email Result :" + result);
+			logger.info("Email Result :" + result);
 			if (result == null)
 				return true;
 			else
 				return false;
 		} catch (HibernateException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(),e);
 		} finally {
 			if (Objects.nonNull(session))
 				session.close();

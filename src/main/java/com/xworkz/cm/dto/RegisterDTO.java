@@ -2,6 +2,8 @@ package com.xworkz.cm.dto;
 
 import java.io.Serializable;
 
+import org.apache.log4j.Logger;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -14,6 +16,8 @@ public class RegisterDTO implements Serializable {
 	
 	private static final long serialVersionUID = -8678379596825896903L;
 	
+	private static final Logger logger=Logger.getLogger(RegisterDTO.class);
+	
 	private int id;
 	private String userId;
 	private String email;
@@ -24,6 +28,6 @@ public class RegisterDTO implements Serializable {
 	private int count;
 	
 	public RegisterDTO() {
-		System.out.println("Created \t"+this.getClass().getSimpleName());
+		logger.info("Created \t"+this.getClass().getSimpleName());
 	}
 }
