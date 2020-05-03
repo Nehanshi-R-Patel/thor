@@ -56,12 +56,12 @@
 		</div>
 
 		<div class="col-sm-4">
-			<b> <label class="col-sm-4 col-form-label for="email">EmailAddress:</label></b>
-			<input type="email" class="form-control" placeholder="email123@gmail.com" name="email">
+			<b> <label class="col-sm-4 col-form-label" for="Email">EmailAddress:</label></b>
+			<input type="text" class="form-control" placeholder="email123@gmail.com" name="email">
 		</div>
 		
 		<div class="col-sm-4">
-			<b><label class="col-sm-4 col-form-label for="phoneNumber">PhoneNumber:</label></b>
+			<b><label class="col-sm-4 col-form-label" for="phoneNumber">PhoneNumber:</label></b>
 			<input type="text" class="form-control" placeholder="PhoneNumber" name="phoneNo">
 		</div>
 

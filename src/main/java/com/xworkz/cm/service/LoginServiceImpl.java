@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import com.xworkz.cm.dao.LoginDAO;
 import com.xworkz.cm.dto.LoginDTO;
 import com.xworkz.cm.entity.RegisterEntity;
+import com.xworkz.cm.exception.DAOException;
+import com.xworkz.cm.exception.ServiceException;
 
 @Service
 public class LoginServiceImpl implements LogInService {
@@ -26,7 +28,7 @@ public class LoginServiceImpl implements LogInService {
 		logger.info("Created \t" + this.getClass().getSimpleName());
 	}
 
-	public String validateLogin(LoginDTO loginDTO) {
+	public String validateLogin(LoginDTO loginDTO) throws ServiceException, DAOException {
 		logger.info("Invoking Validate Login...");
 		boolean flag=false;
 		try {
@@ -69,7 +71,9 @@ public class LoginServiceImpl implements LogInService {
 				return "loginSuccess";
 			}
 		} catch (HibernateException e) {
-			logger.error(e.getMessage(),e);
+			ServiceException exception=new ServiceException();
+			logger.error(exception.getMessage(),exception);
+			throw exception;
 		}
 		return "loginFailed";
 	}

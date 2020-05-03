@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.xworkz.cm.dto.RegisterDTO;
+import com.xworkz.cm.exception.ControllerException;
 import com.xworkz.cm.service.RegisterService;
 
 @Controller
@@ -25,7 +26,7 @@ public class RegisterController {
 	}
 
 	@RequestMapping("register.do")
-	public String onRegister(RegisterDTO registerDTO, Model model) {
+	public String onRegister(RegisterDTO registerDTO, Model model) throws ControllerException {
 		String page = "";
 		logger.info("Inside onRegister()...");
 		logger.info("Model Attribute :" + registerDTO);
@@ -37,7 +38,9 @@ public class RegisterController {
 			}
 			page = "Register";
 		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
+			ControllerException exception = new ControllerException();
+			logger.error(exception.getMessage(), exception);
+			throw exception;
 		}
 
 		return page;

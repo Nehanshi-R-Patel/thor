@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.xworkz.cm.dto.LoginDTO;
+import com.xworkz.cm.exception.ControllerException;
 import com.xworkz.cm.service.LogInService;
 
 @Controller
@@ -23,7 +24,7 @@ public class LoginController {
 	}
 	
 	@RequestMapping("login.do")
-	public String onLogin(LoginDTO loginDTO,Model model) {
+	public String onLogin(LoginDTO loginDTO,Model model) throws ControllerException{
 		String page = "";
 		logger.info("invoking on login...");
 		
@@ -55,8 +56,9 @@ public class LoginController {
 				page ="LoginBlock";
 			}
 		}catch (Exception e) {
-			logger.info("Exception Found");
-			logger.error(e.getMessage(),e);
+			ControllerException exception=new ControllerException();
+			logger.error(exception.getMessage(),e);
+			throw exception;
 		}
 		return page;
 	}

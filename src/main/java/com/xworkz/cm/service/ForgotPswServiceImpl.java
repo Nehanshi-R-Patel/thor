@@ -13,11 +13,13 @@ import org.springframework.ui.Model;
 import com.xworkz.cm.dao.ForgotPswDAO;
 import com.xworkz.cm.dto.ForgotPswDTO;
 import com.xworkz.cm.entity.RegisterEntity;
+import com.xworkz.cm.exception.DAOException;
+import com.xworkz.cm.exception.ServiceException;
 
 @Service
 public class ForgotPswServiceImpl implements ForgotPswService {
-	
-	private static final Logger logger=Logger.getLogger(ForgotPswServiceImpl.class);
+
+	private static final Logger logger = Logger.getLogger(ForgotPswServiceImpl.class);
 
 	@Autowired
 	ForgotPswDAO forgotPswDAO;
@@ -26,7 +28,7 @@ public class ForgotPswServiceImpl implements ForgotPswService {
 		logger.info("Created \t" + this.getClass().getSimpleName());
 	}
 
-	public String validateEmail(ForgotPswDTO forgotPswDTO,Model model) {
+	public String validateEmail(ForgotPswDTO forgotPswDTO, Model model) throws ServiceException, DAOException {
 		logger.info("Invoking Validate Email...");
 		try {
 			RegisterEntity registerEntity = this.forgotPswDAO.fetchEmailId(forgotPswDTO.getEmail());
@@ -51,22 +53,24 @@ public class ForgotPswServiceImpl implements ForgotPswService {
 				for (int i = 0; i < length; i++) {
 					psw += text[i];
 				}
-				BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
-				String hashedPassword=passwordEncoder.encode(psw);
-				
+				BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+				String hashedPassword = passwordEncoder.encode(psw);
+
 				logger.info("Password Generated :" + psw);
-				logger.info("Encoded Password : "+hashedPassword);
-				
+				logger.info("Encoded Password : " + hashedPassword);
+
 				registerEntity.setPassword(hashedPassword);
 				registerEntity.setCount(count);
-				logger.info("Count is:"+count);
-	
+				logger.info("Count is:" + count);
+
 				this.forgotPswDAO.updatePassword(hashedPassword, count, idFmDB);
-				model.addAttribute("NewPassword",psw);
+				model.addAttribute("NewPassword", psw);
 				return "emailMatching";
 			}
 		} catch (HibernateException e) {
-			logger.error(e.getMessage(),e);
+			ServiceException exception=new ServiceException();
+			logger.error(exception.getMessage(),exception);
+			throw exception;
 		}
 		return "emailNotMatching";
 	}

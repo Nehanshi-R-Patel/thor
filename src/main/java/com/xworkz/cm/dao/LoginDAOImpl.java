@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import com.xworkz.cm.entity.RegisterEntity;
+import com.xworkz.cm.exception.DAOException;
 
 @Controller
 public class LoginDAOImpl implements LoginDAO {
@@ -24,7 +25,7 @@ public class LoginDAOImpl implements LoginDAO {
 		logger.info("Created \t" + this.getClass().getSimpleName());
 	}
 
-	public RegisterEntity fetchEmail(String mail) {
+	public RegisterEntity fetchEmail(String mail) throws DAOException{
 		logger.info("Invoking Email...");
 		Session session = null;
 		RegisterEntity entity = null;
@@ -44,7 +45,9 @@ public class LoginDAOImpl implements LoginDAO {
 				return entity;
 			}
 		} catch (HibernateException e) {
-			logger.error(e.getMessage(),e);
+			DAOException exception = new DAOException();
+			logger.error(exception.getMessage(), exception);
+			throw exception;
 		} finally {
 			if (Objects.nonNull(session)) {
 				session.close();
@@ -53,7 +56,7 @@ public class LoginDAOImpl implements LoginDAO {
 		return null;
 	}
 
-	public int updateCount(int count, int id) {
+	public int updateCount(int count, int id) throws DAOException{
 		logger.info("Invoking updateCount...");
 		Session session = null;
 		try {
@@ -74,12 +77,13 @@ public class LoginDAOImpl implements LoginDAO {
 			return 1;
 		} catch (HibernateException e) {
 			session.getTransaction().rollback();
-			logger.error(e.getMessage(),e);
+			DAOException exception = new DAOException();
+			logger.error(exception.getMessage(), exception);
+			throw exception;
 		} finally {
 			if (Objects.nonNull(session)) {
 				session.close();
 			}
 		}
-		return 0;
 	}
 }

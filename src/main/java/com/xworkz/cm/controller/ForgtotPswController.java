@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.xworkz.cm.dto.ForgotPswDTO;
+import com.xworkz.cm.exception.ControllerException;
 import com.xworkz.cm.service.ForgotPswService;
 
 @Controller
@@ -23,7 +24,7 @@ public class ForgtotPswController {
 	}
 	
 	@RequestMapping("forgotPsw.do")
-	public String onForgot(ForgotPswDTO forgotPswDTO,Model model) {
+	public String onForgot(ForgotPswDTO forgotPswDTO,Model model) throws ControllerException {
 		logger.info("Invoking on Forgot...");
 		String page=" ";
 		
@@ -44,8 +45,9 @@ public class ForgtotPswController {
 				page="ForgotPassword";
 			}
 		} catch (Exception e) {
-			logger.info("Exception Found");
-			logger.error(e.getMessage(),e);
+			ControllerException exception=new ControllerException();
+			logger.error(exception.getMessage(),e);
+			throw exception;
 		}
 		return page;
 	}
