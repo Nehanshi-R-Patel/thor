@@ -56,7 +56,7 @@ public class ForgotPswDAOImpl implements ForgotPswDAO {
 		return null;
 	}
 
-	public int updatePassword(String password, int count, int id) throws DAOException {
+	public boolean updatePassword(String password, int count, int id) throws DAOException {
 		logger.info("Invoking updatePassword...");
 		Session session = null;
 		try {
@@ -68,14 +68,14 @@ public class ForgotPswDAOImpl implements ForgotPswDAO {
 					+ "' where re.id = '" + id + "'";
 
 			logger.info("Creating Query");
-			Query query = session.createQuery(hqlQry);
+			Query<RegisterEntity> query = session.createQuery(hqlQry);
 
 			logger.info("Getting unique result");
 			query.executeUpdate();
 
 			logger.info("Query is updated");
 			session.getTransaction().commit();
-			return 1;
+			return true;
 		} catch (HibernateException e) {
 			session.getTransaction().rollback();
 			DAOException exception = new DAOException();

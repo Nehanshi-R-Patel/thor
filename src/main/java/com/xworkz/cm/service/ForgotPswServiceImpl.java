@@ -6,9 +6,10 @@ import java.util.Random;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 
 import com.xworkz.cm.dao.ForgotPswDAO;
 import com.xworkz.cm.dto.ForgotPswDTO;
@@ -20,18 +21,22 @@ import com.xworkz.cm.exception.ServiceException;
 public class ForgotPswServiceImpl implements ForgotPswService {
 
 	private static final Logger logger = Logger.getLogger(ForgotPswServiceImpl.class);
+	
+	@Autowired
+	private MailSender mailSender;
 
 	@Autowired
-	ForgotPswDAO forgotPswDAO;
+	private ForgotPswDAO forgotPswDAO;
 
 	public ForgotPswServiceImpl() {
 		logger.info("Created \t" + this.getClass().getSimpleName());
 	}
 
-	public String validateEmail(ForgotPswDTO forgotPswDTO, Model model) throws ServiceException, DAOException {
+	public String validateEmail(ForgotPswDTO forgotPswDTO) throws ServiceException, DAOException {
 		logger.info("Invoking Validate Email...");
 		try {
-			RegisterEntity registerEntity = this.forgotPswDAO.fetchEmailId(forgotPswDTO.getEmail());
+			String email=forgotPswDTO.getEmail();
+			RegisterEntity registerEntity = this.forgotPswDAO.fetchEmailId(email);
 			logger.info("Register Entity:" + registerEntity);
 
 			if (Objects.isNull(registerEntity)) {
@@ -63,9 +68,19 @@ public class ForgotPswServiceImpl implements ForgotPswService {
 				registerEntity.setCount(count);
 				logger.info("Count is:" + count);
 
-				this.forgotPswDAO.updatePassword(hashedPassword, count, idFmDB);
-				model.addAttribute("NewPassword", psw);
-				return "emailMatching";
+				boolean valid=this.forgotPswDAO.updatePassword(hashedPassword, count, idFmDB);
+				logger.info("Email From DB in Service: "+valid);
+				
+				if(valid==true) {
+					SimpleMailMessage mail=new SimpleMailMessage();
+					mail.setTo(email);
+					mail.setSubject("Regarding to Reset Password");
+					mail.setText("Reset password is Successful And new Generated Password : "+psw);
+					
+					mailSender.send(mail);
+					logger.info("Mail sent Successfully");
+					return "emailMatching";
+				}		
 			}
 		} catch (HibernateException e) {
 			ServiceException exception=new ServiceException();

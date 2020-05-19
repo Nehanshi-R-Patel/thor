@@ -6,5 +6,5 @@ import com.xworkz.cm.exception.DAOException;
 public interface ForgotPswDAO {
 	RegisterEntity fetchEmailId(String mailId) throws DAOException;
 	
-	int updatePassword(String password,int count,int id) throws DAOException;
+	boolean updatePassword(String password,int count,int id) throws DAOException;
 }

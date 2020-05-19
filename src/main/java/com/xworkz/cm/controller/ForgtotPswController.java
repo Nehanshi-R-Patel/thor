@@ -32,7 +32,7 @@ public class ForgtotPswController {
 		logger.info("MailId: "+mailId);
 		
 		try {
-			String dataFmDB=this.forgotPswService.validateEmail(forgotPswDTO,model);
+			String dataFmDB=this.forgotPswService.validateEmail(forgotPswDTO);
 			logger.info("Data From DB:"+dataFmDB);
 			
 			if(dataFmDB.equals("emailMatching")) {

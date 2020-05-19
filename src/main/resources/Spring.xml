@@ -15,9 +15,23 @@
 		<property name="suffix" value=".jsp" />
 	</bean>
 
-
 	<bean id="encoder"
 		class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+		
+	<bean class="org.springframework.mail.javamail.JavaMailSenderImpl"
+		id="mailSender">
+		<property name="host" value="smtp.gmail.com" />
+		<property name="port" value="587" />
+		<property name="username" value="nensipatel1210@gmail.com" />
+		<property name="password" value="1397nensi" />
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtp.auth">true</prop>
+				<prop key="mail.smtp.starttls.enable">true</prop>
+				<prop key="mail.smtp.ssl.trust">smtp.gmail.com</prop>
+			</props>
+		</property>
+	</bean>
 
 	<bean
 		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean"

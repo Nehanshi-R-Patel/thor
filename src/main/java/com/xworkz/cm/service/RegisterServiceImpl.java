@@ -5,6 +5,8 @@ import java.util.Random;
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -16,11 +18,14 @@ import com.xworkz.cm.exception.ServiceException;
 
 @Service
 public class RegisterServiceImpl implements RegisterService {
-	
-	private static final Logger logger=Logger.getLogger(RegisterServiceImpl.class);
+
+	private static final Logger logger = Logger.getLogger(RegisterServiceImpl.class);
 
 	@Autowired
 	private RegisterDAO registerDAO;
+
+	@Autowired
+	private MailSender mailSender;
 
 	public RegisterServiceImpl() {
 		logger.info("Created \t" + this.getClass().getSimpleName());
@@ -28,20 +33,19 @@ public class RegisterServiceImpl implements RegisterService {
 
 	public String validateAndSave(RegisterDTO registerDTO, Model model) throws ServiceException {
 		logger.info("invoking validate and save....");
-		
-		String agreeButton=registerDTO.getAgree();
-		logger.info("Agree Button Value: "+agreeButton);
-		
+
+		String agreeButton = registerDTO.getAgree();
+		logger.info("Agree Button Value: " + agreeButton);
+
 		if (!"Agree".equals(agreeButton)) {
 			logger.info("Not valid for registration");
 			model.addAttribute("msgForDisAgree", "you have disagreed for registration");
 			return "Register";
-		} 
-		else {
+		} else {
 			try {
 				RegisterEntity entity = new RegisterEntity();
 				BeanUtils.copyProperties(registerDTO, entity);
-				
+
 				if (registerDAO.getUserId(registerDTO.getUserId()) && registerDAO.getEmail(registerDTO.getEmail())) {
 					String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 					String psw = "";
@@ -55,23 +59,34 @@ public class RegisterServiceImpl implements RegisterService {
 					for (int i = 0; i < length; i++) {
 						psw += text[i];
 					}
-					
-					BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
-					String hashedPassword=passwordEncoder.encode(psw);
-			
-					logger.info("Encoded Password: "+hashedPassword);
+
+					BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+					String hashedPassword = passwordEncoder.encode(psw);
+
+					logger.info("Encoded Password: " + hashedPassword);
 					logger.info("Password Generated");
-			
+
 					entity.setPassword(hashedPassword);
 					entity.setCount(0);
-			
+
 					logger.info("Password :" + psw);
-			
+
 					model.addAttribute("UserID", entity.getUserId());
-					model.addAttribute("Password",psw);
-					
+					model.addAttribute("Password", psw);
+
 					this.registerDAO.saveRegisterData(entity);
-					return "Register";
+
+					{
+						SimpleMailMessage mail = new SimpleMailMessage();
+						mail.setTo(registerDTO.getEmail());
+						mail.setSubject("Regarding registration and Generate Password");
+						mail.setText("Registration is successfull and your Password is : " + psw
+								+ " Use this password for login  Have a Good Day...!");
+						
+						mailSender.send(mail);
+						logger.info("Mail Sent Successfully with password");
+						return "Register";
+					}
 				} else if (registerDAO.getUserId(registerDTO.getUserId())) {
 					model.addAttribute("existingEmail", "Email is already exists");
 					return "Register";
@@ -79,9 +94,9 @@ public class RegisterServiceImpl implements RegisterService {
 					model.addAttribute("existingUser", "UserId is already exists");
 					return "Register";
 				}
-			}catch (Exception e) {
-				ServiceException exception=new ServiceException();
-				logger.error(exception.getMessage(),exception);
+			} catch (Exception e) {
+				ServiceException exception = new ServiceException();
+				logger.error(exception.getMessage(), exception);
 				throw exception;
 			}
 		}
